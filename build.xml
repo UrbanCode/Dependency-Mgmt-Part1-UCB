@@ -28,7 +28,12 @@
         MAIN TARGETS
     -->
     <target name="dist-main" depends="compile-main">
-        <jar destfile="${dist.dir}/${project.name}.jar" basedir="${build.classes.dir}"/>
+        <jar destfile="${dist.dir}/${project.name}.jar" basedir="${build.classes.dir}">
+            <zipfileset includes="**/*.class" src="lib/HelloWorldPrinter.jar"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.urbancode.demo.HelloWorld"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="compile-main" depends="clean">
