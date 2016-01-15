@@ -1,4 +1,4 @@
-<project name="HelloWorld" default="dist" basedir=".">
+<project name="HelloWorld" default="dist" basedir="." xmlns:codestation="antlib:com.urbancode.codestation2.client">
     <!--
         PROPERTIES
     -->
@@ -8,8 +8,9 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="dist.dir" value="dist"/>
     <property name="lib.dir" value="lib"/>
-	<property name="test.lib.dir" value="dependency/test"/>
 	<property name="test.dir" value="test"/>
+	
+	<property name="download.dir" location="download" />
 	
 	<property name="junit.filename" value="junit-4.12.jar"/>
 	<property name="hamcrest.filename" value="hamcrest-core-1.3"/>
@@ -75,4 +76,137 @@
         <delete dir="${dist.dir}" failonerror="false"/>
         <delete dir="${lib.dir}" failonerror="false"/>
     </target>
+	
+	<!--
+		RESOLVE
+	-->
+	<target name="resolve" unless="resolve.no">
+	    <codestation:resolve basedir="." project="${ant.project.name}" workflow="HelloWorldWorkflow" />
+	    <antcall target="unpack"/>
+	</target>
+	
+	<target name="unpack" depends="unpack-groovy, unpack-tomcat, unpack-ant, unpack-activemq"/>
+	
+	<target name="unpack-tomcat" unless="unpack.no">
+	    <delete dir="${opt.dir}/tomcat" includeemptydirs="true"/>
+	    <mkdir dir="${opt.dir}" />
+	    <mkdir dir="${opt.dir}/tomcat" />
+	    <locate-file-path dir="${build.dir}/../artifacts" name="apache-tomcat-*.zip" property="tomcat.zip" />
+	    <unzip src="${tomcat.zip.path}" dest="${opt.dir}/tomcat">
+	      <patternset>
+	        <!-- all versions -->
+	        <include name="apache-tomcat-*/LICENSE" />
+	        <include name="apache-tomcat-*/NOTICE" />
+	        <include name="apache-tomcat-*/RELEASE-NOTES" />
+	        <include name="apache-tomcat-*/*.txt" />
+	        <include name="apache-tomcat-*/bin/*.jar" />
+	        <include name="apache-tomcat-*/conf/catalina.properties" />
+	        <exclude name="apache-tomcat-*/webapps/**"/>
+
+	        <!-- 6.x -->
+	        <include name="apache-tomcat-*/lib/*.jar" />
+
+	        <!-- 5.5 -->
+	        <include name="apache-tomcat-*/common/lib/*.jar" />
+	        <include name="apache-tomcat-*/i18n/lib/*.jar" />
+	        <include name="apache-tomcat-*/server/lib/*.jar" />
+	      </patternset>
+	      <mapper type="regexp" from="^apache-tomcat-[\d.]*/(.*)$" to="\1" />
+	    </unzip>
+
+	    <mkdir dir="${opt.dir}/tomcat/endorsed" />
+
+	    <!-- read the tomcat version -->
+	    <property resource="org/apache/catalina/util/ServerInfo.properties" prefix="tomcat">
+	      <classpath>
+	        <fileset dir="opt/tomcat/" includes="**/catalina.jar"/>
+	      </classpath>
+	    </property>
+	    <echo>Using Tomcat ${tomcat.server.number}</echo>
+	    <echo file="${opt.dir}/tomcat/tomcat.version" message="${tomcat.server.number}"/>
+	  </target>
+
+	  <target name="unpack-groovy" unless="unpack.no">
+	    <!-- Locate a groovy zip file, ensure exactly one match, and create a property for the path -->
+	    <!--   create fileset of file as groovy.zip.file and path as groovy.zip.file.path -->
+	    <locate-file-path dir="${download.dir}" name="groovy-*.zip" property="groovy.zip" />
+
+	    <!-- Unpack groovy zip file, removing any previous groovy -->
+	    <sync todir="${opt.dir}" overwrite="true">
+	      <preserveintarget>
+	        <exclude name="groovy-*/**" />
+	      </preserveintarget>
+	      <zipfileset src="${groovy.zip.path}" />
+	    </sync>
+	  </target>
+	
+	<target name="unpack-ant" unless="unpack.no">
+	    <mkdir dir="${download.dir}" />
+
+	    <!-- Locate the ant tgz file, ensure exactly one match, and create a property for the path -->
+	    <locate-file-path dir="${download.dir}" name="apache-ant*.tar.gz" property="ant.tgz" />
+
+	    <!-- sync is very slow with this for some reason, so doing just a rewrite instead -->
+	    <delete includeemptydirs="true">
+	      <fileset dir="${opt.dir}" includes="apache-ant*/**" defaultexcludes="false"/>
+	      <dirset dir="${opt.dir}" includes="apache-ant*/**" defaultexcludes="false" />
+	    </delete>
+	    <untar dest="${opt.dir}" src="${ant.tgz.path}" compression="gzip" overwrite="true">
+	      <patternset>
+	        <!-- manual strucuture adds lots of MB and makes paths too long for basic tar -->
+	        <exclude name="apache-ant-*/manual/**"/>
+	      </patternset>
+	    </untar>
+	  </target>
+
+	  <target name="unpack-activemq" unless="unpack.no">
+	    <mkdir dir="${download.dir}" />
+
+	    <!-- Locate the activemq zip file, ensure exactly one match, and create a property for the path -->
+	    <locate-file-path dir="${download.dir}" name="apache-activemq-*.zip" property="activemq.zip" />
+
+	    <!-- sync is very slow with this for some reason, so doing just a rewrite instead -->
+	    <delete includeemptydirs="true">
+	      <fileset dir="${opt.dir}" includes="apache-activemq-*/**/*" />
+	      <dirset dir="${opt.dir}" includes="apache-activemq-*/**/*" />
+	    </delete>
+	    <echo message="${activemq.zip.name}" />
+	    <unzip dest="${opt.dir}" src="${activemq.zip.path}" overwrite="true">
+	      <patternset>
+	        <exclude name="apache-activemq-*/conf/*" />
+	      </patternset>
+	    </unzip>
+
+	    <locate-dir-path dir="${opt.dir}" name="apache-activemq-*" property="activemq.dir" />
+
+	    <move file="${activemq.dir.path}" tofile="${opt.dir}/apache-activemq" />
+	  </target>
+	
+	<macrodef name="locate-file-path"
+	            description="Locate a single file within a @{dir} (fail if not exactly one match found) and store the single file fileset in @{property}.file and path string in @{property}.path">
+	    <attribute name="dir" />
+	    <!-- the base directory -->
+	    <attribute name="name" />
+	    <!-- pattern for the name of the file to locate relative to @{dir} -->
+	    <attribute name="property" />
+	    <!-- the prefix for the path property and the fileset id  -->
+
+	    <sequential>
+	      <fileset id="@{property}.file" dir="@{dir}" includes="@{name}">
+	        <depth max="1" />
+	      </fileset>
+	      <fail message="No match found for @{name} (@{type}) in @{dir}">
+	        <condition>
+	          <resourcecount refid="@{property}.file" count="0" />
+	        </condition>
+	      </fail>
+	      <fail message="Multiple matches for @{name} (@{type}) found in @{dir}">
+	        <condition>
+	          <resourcecount refid="@{property}.file" when="ne" count="1" />
+	        </condition>
+	      </fail>
+	      <property name="@{property}.name" refid="@{property}.file" />
+	      <pathconvert property="@{property}.path" refid="@{property}.file" />
+	    </sequential>
+	  </macrodef>
 </project>
