@@ -8,6 +8,9 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="dist.dir" value="dist"/>
     <property name="lib.dir" value="lib"/>
+	
+	<property name="junit.filename" value="junit-4.12.jar"/>
+	<property name="hamcrest.filename" value="hamcrest-core-1.3"/>
 
     <!--
         PATHS
@@ -16,6 +19,7 @@
         <fileset dir="${lib.dir}">
           <include name="*.jar" />
         </fileset>
+    	<pathelement location="${build.classes.dir}" />
     </path>
 
     <!--
@@ -23,6 +27,7 @@
     -->
     <target name="dist" depends="compile, dist-main"/>
     <target name="compile" depends="compile-main"/>
+	<target name="test" depends="compile, junit-test"/>
 
     <!--
         MAIN TARGETS
@@ -43,6 +48,17 @@
             <classpath refid="classpath.main"/>
         </javac>
     </target>
+	
+	<!--
+		JUnit Tests
+	-->
+	<target name="junit-test">
+		<junit printsummary="yes" fork="yes" haltonfailure="yes">
+			<classpath refid="classpath.main"/>
+			<formatter type="plain"/>
+			<test name="com.urbancode.test.HelloWorldTest"/>
+		</junit>
+	</target>
 
     <!--
         CLEAN TARGETS
