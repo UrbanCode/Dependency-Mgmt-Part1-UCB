@@ -27,8 +27,9 @@
     <!--
         BASE TARGETS
     -->
-    <target name="dist" depends="compile, dist-main, junit-test"/>
+    <target name="dist" depends="compile, dist-main"/>
     <target name="compile" depends="compile-main"/>
+	<target name="test" depends="compile, junit-test"/>
 
     <!--
         MAIN TARGETS
