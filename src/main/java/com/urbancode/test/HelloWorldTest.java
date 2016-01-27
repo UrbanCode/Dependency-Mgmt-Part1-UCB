@@ -8,6 +8,6 @@ import com.urbancode.dependency.HelloWorldPrinter;
 public class HelloWorldTest {
 	@Test
 	public void runTest() {
-		assertEquals("Testing HelloWorld's output", "Hello World Test 2", HelloWorldPrinter.print());
+		assertEquals("Testing HelloWorld's output", "Hello World", HelloWorldPrinter.print());
 	}
 }
