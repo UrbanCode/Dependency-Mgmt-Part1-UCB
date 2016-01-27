@@ -8,7 +8,7 @@
     <property name="build.classes.dir" value="${build.dir}/classes"/>
     <property name="dist.dir" value="dist"/>
     <property name="lib.dir" value="lib"/>
-	<property name="test.lib.dir" value="dependency/test"/>
+	
 	<property name="test.dir" value="test"/>
 	
 	<property name="junit.filename" value="junit-4.12.jar"/>
@@ -72,6 +72,7 @@
     </target>
 
     <target name="clean-all" depends="clean">
+    	<delete dir="${test.dir}" failonerror="false"/>
         <delete dir="${dist.dir}" failonerror="false"/>
         <delete dir="${lib.dir}" failonerror="false"/>
     </target>
