@@ -1,0 +1,25 @@
+apply plugin: 'java'
+
+defaultTasks 'bundleJar'
+
+repositories {
+    maven {
+        url "https://localhost:8443/rest/maven2"
+        credentials {
+            username 'admin'
+            password 'admin'
+        }
+    }
+}
+
+dependencies {
+    compile group: 'com.ibm.urbancode.Hello_World_Printer.GitHub_Build', name: 'HelloWorldPrinter', version: '1+'
+}
+
+task bundleJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.urbancode.demo.HelloWorld'
+    }
+    from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
