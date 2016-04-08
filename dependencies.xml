@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.urbancode.com/schema/ubuild/cs/project-dependencies/1.0"
+         name="HelloWorld" process="Git Build">
+  <dependencies>
+    <dependency>
+      <project name="HelloWorldPrinter" process="Git Build"/>
+      <criteria status="success"/>
+      <delivery artifact-set="dist">
+        <directory>lib</directory>
+      </delivery>
+    </dependency>
+  </dependencies>
+</project>
