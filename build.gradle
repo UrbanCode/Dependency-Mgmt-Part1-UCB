@@ -2,6 +2,11 @@ apply plugin: 'java'
 
 defaultTasks 'bundleJar'
 
+version="1.0-SNAPSHOT"
+if (hasProperty('newVersion')) {
+    version = newVersion
+}
+
 repositories {
     maven {
         url "https://localhost:8443/rest/maven2"
