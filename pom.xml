@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mycompany.app</groupId>
-  <artifactId>my-app</artifactId>
+  <groupId>com.ibm.urbancode</groupId>
+  <artifactId>HelloWorld</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>Maven Quick Start Archetype</name>
-  <url>http://maven.apache.org</url>
+  <version>1.0</version>
+  <name>Hello World</name>
+  <url>https://github.com/IBM-UrbanCode/Dependencies-HelloWorld</url>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Build an executable jar that contains dependencies -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <!-- Build the jar as HelloWorld-1.0.jar instead of HelloWorld-1.0-jar-with-dependencies.jar -->
+          <appendAssemblyId>false</appendAssemblyId>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.urbancode.demo.HelloWorld</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <!-- Runs as if the command were 'mvn package assembly:single' when the command is just 'mvn package' -->
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <repositories>
+    <!-- Use your IBM UrbanCode Build server as a repository -->
     <repository>
       <id>ucb</id>
       <name>UCB</name>
@@ -18,9 +50,8 @@
     <dependency>
       <groupId>com.ibm.urbancode.Hello_World_Printer.GitHub_Build</groupId>
       <artifactId>HelloWorldPrinter</artifactId>
+      <!-- Get the latest version from IBM UrbanCode Build -->
       <version>[1,)</version>
-      <scope>compile</scope>
-      <type>jar</type>
     </dependency>
   </dependencies>
 </project>
