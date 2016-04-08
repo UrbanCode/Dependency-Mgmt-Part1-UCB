@@ -1,8 +1,9 @@
-<project name="HelloWorld" default="dist" basedir=".">
+<project name="HelloWorld" default="dist" basedir="." xmlns:codestation="antlib:com.urbancode.ubuild.codestation.client">
     <!--
         PROPERTIES
     -->
     <property name="project.name" value="${ant.project.name}"/>
+    <property name="workflow.name" value="GitHub Build"/>
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
     <property name="build.classes.dir" value="${build.dir}/classes"/>
@@ -27,9 +28,18 @@
     <!--
         MAIN TARGETS
     -->
+    <target name="resolve" unless="resolve.no" description="Resolve all dependencies">
+        <mkdir dir="${lib.dir}"/>
+        <codestation:resolve
+            project="${project.name}"
+            workflow="${workflow.name}"
+            buildLife="${env.BUILD_LIFE_ID}"
+            xmlfile="dependencies.xml"/>
+    </target>
+
     <target name="dist-main" depends="compile-main">
         <jar destfile="${dist.dir}/${project.name}.jar" basedir="${build.classes.dir}">
-            <zipfileset includes="**/*.class" src="lib/HelloWorldPrinter.jar"/>
+            <zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
             <manifest>
                 <attribute name="Main-Class" value="com.urbancode.demo.HelloWorld"/>
             </manifest>
