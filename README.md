@@ -1,10 +1,10 @@
-# Hello World
-A simple Hello World project to demonstrate dependency management with IBM UrbanCode Build
+# Hello World: Dependency Management Part 1 - IBM UrbanCode Build
+A simple Hello World project to demonstrate dependency management with IBM UrbanCode Build. This project is used to demonstrate dependency management with a dependencies.xml in an IBM UrbanCode Build plug-in.
 
 ## Building the Project
 ### Ant
 ##### Without dependencies.xml
-When using IBM UrbanCode Build to manage your dependency on the [HelloWorldPrinter](https://github.com/IBM-UrbanCode/Dependencies-HelloWorldPrinter) project, you just need to make sure that the HelloWorldPrinter jar is in the `lib` directory and then run
+When using IBM UrbanCode Build to manage your dependency on the [Dependency-Mgmt-Part2-UCB](https://github.com/IBM-UrbanCode/Dependency-Mgmt-Part2-UCB) project, you just need to make sure that the HelloWorldPrinter jar is in the `lib` directory and then run
 ```
 ant dist
 ```
